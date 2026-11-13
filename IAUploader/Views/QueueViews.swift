@@ -196,7 +196,10 @@ struct UploadColumn: View {
                     group("Needs attention", key: "attention", jobs: attention, defaultExpanded: true)
                     group("Done", key: "done", jobs: done, defaultExpanded: false)
                 }
-                .listStyle(.sidebar)
+                // Plain list with our own collapsible headers: AppKit's
+                // source-list group rows (.sidebar + Section(isExpanded:)) can
+                // crash when rows move between sections many times a second.
+                .listStyle(.inset)
                 .contextMenu(forSelectionType: UUID.self) { ids in
                     contextMenu(ids)
                 } primaryAction: { ids in
@@ -240,14 +243,28 @@ struct UploadColumn: View {
     @ViewBuilder
     private func group(_ title: String, key: String, jobs: [UploadJob], defaultExpanded: Bool) -> some View {
         if !jobs.isEmpty {
-            Section(isExpanded: ViewMemory.shared.flagBinding("upload.section.\(key)", default: defaultExpanded)) {
-                ForEach(jobs.prefix(key == "done" ? 300 : 2000)) { job in
-                    QueueRow(job: job, compact: true, showIdentifier: identifier == nil)
-                        .tag(job.id)
+            let expanded = ViewMemory.shared.flag("upload.section.\(key)", default: defaultExpanded)
+            Section {
+                if expanded {
+                    ForEach(jobs.prefix(key == "done" ? 300 : 2000)) { job in
+                        QueueRow(job: job, compact: true, showIdentifier: identifier == nil)
+                            .tag(job.id)
+                    }
                 }
             } header: {
                 HStack {
-                    Text(title)
+                    Button {
+                        ViewMemory.shared.setFlag("upload.section.\(key)", !expanded)
+                    } label: {
+                        HStack(spacing: 5) {
+                            Image(systemName: expanded ? "chevron.down" : "chevron.right")
+                                .font(UIScale.font(9, .bold))
+                                .foregroundStyle(.secondary)
+                            Text(title).font(UIScale.font(12, .semibold))
+                        }
+                        .contentShape(Rectangle())
+                    }
+                    .buttonStyle(.plain)
                     Spacer()
                     Text("\(jobs.count)").monospacedDigit()
                     if key == "done" {

@@ -27,6 +27,19 @@ servers.
 - Quit guard while uploading, remembered layout and expanded folders, adjustable text size
   (View ▸ Bigger / Smaller).
 
+## Download
+
+Get the latest `Internet-Archive-Uploader-x.y.z-macOS.zip` from
+[Releases](https://github.com/alchemy-color/internet-archive-uploader/releases), unzip it and move
+**ArchiveUploader.app** to Applications. It runs on Apple Silicon and Intel Macs with macOS 15 or later.
+
+The app is not notarized by Apple, so the first launch is blocked. Open it once, then go to
+**System Settings ▸ Privacy & Security** and click **Open Anyway**. Alternatively, in Terminal:
+
+```sh
+xattr -dr com.apple.quarantine /Applications/ArchiveUploader.app
+```
+
 ## Requirements
 
 - macOS 15 or later
