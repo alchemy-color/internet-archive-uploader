@@ -1,0 +1,80 @@
+name: IAUploader
+options:
+  bundleIdPrefix: com.paulomartins
+  deploymentTarget:
+    macOS: "15.0"
+  createIntermediateGroups: true
+  groupSortPosition: top
+
+settings:
+  base:
+    SWIFT_VERSION: "5.0"
+    MACOSX_DEPLOYMENT_TARGET: "15.0"
+    CODE_SIGN_STYLE: Manual
+    CODE_SIGN_IDENTITY: "-"
+    CODE_SIGNING_REQUIRED: "NO"
+    ENABLE_HARDENED_RUNTIME: "NO"
+    ENABLE_APP_SANDBOX: "NO"
+    DEAD_CODE_STRIPPING: "YES"
+    CLANG_ENABLE_MODULES: "YES"
+
+targets:
+  IAUploader:
+    type: application
+    platform: macOS
+    sources:
+      - path: IAUploader
+        excludes:
+          - Info.plist
+    info:
+      path: IAUploader/Info.plist
+      properties:
+        CFBundleName: Internet Archive Uploader
+        CFBundleDisplayName: Internet Archive Uploader
+        CFBundleShortVersionString: "1.0"
+        CFBundleVersion: "1"
+        LSMinimumSystemVersion: "15.0"
+        LSApplicationCategoryType: public.app-category.utilities
+        NSHighResolutionCapable: true
+        NSHumanReadableCopyright: "Copyright © 2026 alchemy-color. MIT License."
+        CFBundleIconName: AppIcon
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.paulomartins.IAUploader
+        PRODUCT_NAME: ArchiveUploader
+        ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
+        ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME: AccentColor
+        COMBINE_HIDPI_IMAGES: "YES"
+        LD_RUNPATH_SEARCH_PATHS: "$(inherited) @executable_path/../Frameworks"
+
+  IAUploaderTests:
+    type: bundle.unit-test
+    platform: macOS
+    sources:
+      - IAUploaderTests
+    dependencies:
+      - target: IAUploader
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.paulomartins.IAUploaderTests
+        GENERATE_INFOPLIST_FILE: "YES"
+        TEST_HOST: "$(BUILT_PRODUCTS_DIR)/ArchiveUploader.app/Contents/MacOS/ArchiveUploader"
+        BUNDLE_LOADER: "$(TEST_HOST)"
+
+schemes:
+  IAUploader:
+    build:
+      targets:
+        IAUploader: all
+        IAUploaderTests: [test]
+    run:
+      config: Debug
+    test:
+      config: Debug
+      targets:
+        - IAUploaderTests
+      environmentVariables:
+        # Tests never read or write the real queue, state, or preferences.
+        IAUPLOADER_CONFIG_DIR: /tmp/IAUploaderTests-config
+    archive:
+      config: Release

@@ -1,0 +1,25 @@
+# macOS
+.DS_Store
+
+# Build products (built with ./build.sh into $TMPDIR, then copied here)
+*.app
+build/
+DerivedData/
+.build/
+*.xcresult
+
+# Xcode user state
+*.xcodeproj/xcuserdata/
+*.xcworkspace/xcuserdata/
+*.xcuserstate
+.swiftpm/
+
+# Local working copies
+_backup*/
+
+# Never commit credentials or app data (the app keeps these in ~/.config/IAUploader)
+credentials.json
+state.json
+queue.json
+md5cache.json
+*.ips
